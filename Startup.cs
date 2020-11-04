@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using PriceService.Repository;
 
 namespace PriceService
 {
@@ -31,6 +33,11 @@ namespace PriceService
             services.AddSwaggerGenNewtonsoftSupport();
             services.AddSwaggerGen();
             services.AddControllers();
+            services.AddPriceDbOptions(Configuration);
+
+            services.AddScoped<IPriceRepository, PriceRepository>();
+
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

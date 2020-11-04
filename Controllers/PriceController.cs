@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PriceService.Models;
+using PriceService.Repository;
 
 namespace PriceService.Controllers
 {
@@ -12,17 +14,24 @@ namespace PriceService.Controllers
     [Route("[controller]")]
     public class PriceController : ControllerBase
     {
+        private readonly IPriceRepository _priceRepository;
         private readonly ILogger<PriceController> _logger;
+        private readonly IMapper _mapper;
 
-        public PriceController(ILogger<PriceController> logger)
+        public PriceController(IPriceRepository priceRepository, ILogger<PriceController> logger, IMapper mapper)
         {
+            _priceRepository = priceRepository;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IEnumerable<Price>> Get()
         {
-            return await Task.Run(() => Enumerable.Range(1, 5).Select(index => new Price()).ToArray());
+            var priceDbModels = await _priceRepository.GetAll();
+            var prices = _mapper.Map<IEnumerable<Price>>(priceDbModels);
+
+            return prices;
         }
     }
 }
