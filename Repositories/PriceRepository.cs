@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using BaseRepositories;
 using Dapper;
@@ -13,10 +14,10 @@ namespace PriceService.Repository
         {
         }
 
-        public override async Task<IEnumerable<PriceDbModel>> GetAll()
+        public async Task<IEnumerable<PriceDbModel>> GetAll(CancellationToken token)
         {
             await using var db = await GetSqlConnection();
-            return await db.QueryAsync<PriceDbModel>($"SELECT * FROM [Price] WHERE [IsDeleted] = 0");
+            return await db.QueryAsync<PriceDbModel>(new CommandDefinition($"SELECT * FROM [Price] WHERE [IsDeleted] = 0", token));
         }
     }
 }

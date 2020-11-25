@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PriceService.Models;
@@ -11,6 +13,7 @@ using PriceService.Repository;
 namespace PriceService.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class PriceController : ControllerBase
     {
@@ -26,9 +29,9 @@ namespace PriceService.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Price>> Get()
+        public async Task<IEnumerable<Price>> Get(CancellationToken token)
         {
-            var priceDbModels = await _priceRepository.GetAll();
+            var priceDbModels = await _priceRepository.GetAll(token);
             var prices = _mapper.Map<IEnumerable<Price>>(priceDbModels);
 
             return prices;
